@@ -62,7 +62,7 @@ def main():
 
 def handle_dialog(req, res):
     user_id = req['session']['user_id']
-
+    count = 0
     if req['session']['new']:
         # Это новый пользователь.
         # Инициализируем сессию и поприветствуем его.
@@ -89,7 +89,7 @@ def handle_dialog(req, res):
     # Если он написал 'ладно', 'куплю', 'покупаю', 'хорошо',
     # то мы считаем, что пользователь согласился.
     # Подумайте, всё ли в этом фрагменте написано "красиво"?
-    if req['request']['original_utterance'].lower() in [
+    if count == 0 and req['request']['original_utterance'].lower() in [
         'ладно',
         'куплю',
         'покупаю',
@@ -98,14 +98,32 @@ def handle_dialog(req, res):
         'я куплю'
     ]:
         # Пользователь согласился, прощаемся.
-        res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!'
+        res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!\nА теперь купи кролика!'
+        count += 1
+        return
+    elif count == 1 and req['request']['original_utterance'].lower() in [
+        'ладно',
+        'куплю',
+        'покупаю',
+        'хорошо',
+        'я покупаю',
+        'я куплю'
+    ]:
+        # Пользователь согласился, прощаемся.
+        res['response']['text'] = 'Кролика можно найти на Яндекс.Маркете!'
         res['response']['end_session'] = True
         return
 
-    # Если нет, то убеждаем его купить слона!
-    res['response']['text'] = \
-        f"Все говорят '{req['request']['original_utterance']}', а ты купи слона!"
-    res['response']['buttons'] = get_suggests(user_id)
+    if count == 0:
+        # Если нет, то убеждаем его купить слона!
+        res['response']['text'] = \
+            f"Все говорят '{req['request']['original_utterance']}', а ты купи слона!"
+        res['response']['buttons'] = get_suggests(user_id)
+    elif count != 0:
+        # Если нет, то убеждаем его купить слона!
+        res['response']['text'] = \
+            f"Все говорят '{req['request']['original_utterance']}', а ты купи кролика!"
+        res['response']['buttons'] = get_suggests(user_id)
 
 
 # Функция возвращает две подсказки для ответа.
