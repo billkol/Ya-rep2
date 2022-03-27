@@ -101,7 +101,7 @@ def handle_dialog(req, res):
         res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!\nА теперь купи кролика!'
         count += 1
         return
-    elif count == 1 and req['request']['original_utterance'].lower() in [
+    elif count != 0 and req['request']['original_utterance'].lower() in [
         'ладно',
         'куплю',
         'покупаю',
