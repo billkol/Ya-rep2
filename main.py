@@ -100,7 +100,7 @@ def handle_dialog(req, res):
         # Пользователь согласился, прощаемся.
         res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!\nА теперь купи кролика'
         res['response']['end_session'] = True
-        by_rebbit(request.json, response)
+        by_rebbit(req, res)
         return
 
     # Если нет, то убеждаем его купить слона!
