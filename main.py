@@ -82,7 +82,7 @@ def handle_dialog(req, res):
         res['response']['text'] = 'Привет! Купи слона!'
         # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
-        return
+        return 0
 
     # Сюда дойдем только, если пользователь не новый,
     # и разговор с Алисой уже был начат
@@ -92,9 +92,6 @@ def handle_dialog(req, res):
     # Если он написал 'ладно', 'куплю', 'покупаю', 'хорошо',
     # то мы считаем, что пользователь согласился.
     # Подумайте, всё ли в этом фрагменте написано "красиво"?
-    if count != 0:
-        by_rebbit(req, res)
-        return
     if req['request']['original_utterance'].lower() in [
         'ладно',
         'куплю',
@@ -107,7 +104,7 @@ def handle_dialog(req, res):
         res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!\nА теперь купи кролика'
         count += 1
         # res['response']['end_session'] = True
-        return
+        return 1
 
     # Если нет, то убеждаем его купить слона!
     res['response']['text'] = \
