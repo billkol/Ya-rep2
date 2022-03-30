@@ -54,7 +54,7 @@ def main():
     # непосредственно за ведение диалога
     by_rebbit(request.json, response)
 
-    # handle_dialog(request.json, response)
+    handle_dialog(request.json, response)
 
     logging.info(f'Response:  {response!r}')
 
@@ -130,6 +130,7 @@ def by_rebbit(req, res):
             ]
         }
         # Заполняем текст ответа
+        res['response']['text'] = 'Привет! Купи кролика!'
         # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
         return
