@@ -37,7 +37,7 @@ sessionStorage = {}
 # который отправила нам Алиса в запросе POST
 def main():
     logging.info(f'Request: {request.json!r}')
-    count = 0
+
     # Начинаем формировать ответ, согласно документации
     # мы собираем словарь, который потом при помощи
     # библиотеки json преобразуем в JSON и отдадим Алисе
@@ -52,10 +52,7 @@ def main():
     # Отправляем request.json и response в функцию handle_dialog.
     # Она сформирует оставшиеся поля JSON, которые отвечают
     # непосредственно за ведение диалога
-    if count == 0:
-        by_rebbit(request.json, response)
-    else:
-        count += handle_dialog(request.json, response)
+    handle_dialog(request.json, response)
 
     logging.info(f'Response:  {response!r}')
 
@@ -82,56 +79,6 @@ def handle_dialog(req, res):
         res['response']['text'] = 'Привет! Купи слона!'
         # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
-        return 0
-
-    # Сюда дойдем только, если пользователь не новый,
-    # и разговор с Алисой уже был начат
-    # Обрабатываем ответ пользователя.
-    # В req['request']['original_utterance'] лежит весь текст,
-    # что нам прислал пользователь
-    # Если он написал 'ладно', 'куплю', 'покупаю', 'хорошо',
-    # то мы считаем, что пользователь согласился.
-    # Подумайте, всё ли в этом фрагменте написано "красиво"?
-    if req['request']['original_utterance'].lower() in [
-        'ладно',
-        'куплю',
-        'покупаю',
-        'хорошо',
-        'я покупаю',
-        'я куплю'
-    ]:
-        # Пользователь согласился, прощаемся.
-        res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!\nА теперь купи кролика'
-        count += 1
-        # res['response']['end_session'] = True
-        return 1
-
-    # Если нет, то убеждаем его купить слона!
-    res['response']['text'] = \
-        f"Все говорят '{req['request']['original_utterance']}', а ты купи слона!"
-    res['response']['buttons'] = get_suggests(user_id)
-    return 0
-
-
-def by_rebbit(req, res):
-    user_id = req['session']['user_id']
-
-    if req['session']['new']:
-        # Это новый пользователь.
-        # Инициализируем сессию и поприветствуем его.
-        # Запишем подсказки, которые мы ему покажем в первый раз
-
-        sessionStorage[user_id] = {
-            'suggests': [
-                "Не хочу.",
-                "Не буду.",
-                "Отстань!",
-            ]
-        }
-        # Заполняем текст ответа
-        res['response']['text'] = 'Привет! Купи кролика!'
-        # Получим подсказки
-        res['response']['buttons'] = get_suggests(user_id)
         return
 
     # Сюда дойдем только, если пользователь не новый,
@@ -142,7 +89,7 @@ def by_rebbit(req, res):
     # Если он написал 'ладно', 'куплю', 'покупаю', 'хорошо',
     # то мы считаем, что пользователь согласился.
     # Подумайте, всё ли в этом фрагменте написано "красиво"?
-    if req['request']['original_utterance'].lower() in [
+    if count != 0 and req['request']['original_utterance'].lower() in [
         'ладно',
         'куплю',
         'покупаю',
@@ -154,11 +101,28 @@ def by_rebbit(req, res):
         res['response']['text'] = 'Кролика можно найти на Яндекс.Маркете!'
         res['response']['end_session'] = True
         return
+    elif count == 0 and req['request']['original_utterance'].lower() in [
+        'ладно',
+        'куплю',
+        'покупаю',
+        'хорошо',
+        'я покупаю',
+        'я куплю'
+    ]:
+        # Пользователь согласился, прощаемся.
+        res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!\nА теперь купи кролика'
+        count += 1
+        return
 
     # Если нет, то убеждаем его купить слона!
-    res['response']['text'] = \
-        f"Все говорят '{req['request']['original_utterance']}', а ты купи кролика!"
-    res['response']['buttons'] = get_suggests(user_id)
+    if count != 0:
+        res['response']['text'] = \
+            f"Все говорят '{req['request']['original_utterance']}', а ты купи кролика!"
+        res['response']['buttons'] = get_suggests(user_id)
+    elif count == 0:
+        res['response']['text'] = \
+            f"Все говорят '{req['request']['original_utterance']}', а ты купи слона!"
+        res['response']['buttons'] = get_suggests(user_id)
 
 
 # Функция возвращает две подсказки для ответа.
