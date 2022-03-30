@@ -37,7 +37,7 @@ sessionStorage = {}
 # который отправила нам Алиса в запросе POST
 def main():
     logging.info(f'Request: {request.json!r}')
-
+    count = 0
     # Начинаем формировать ответ, согласно документации
     # мы собираем словарь, который потом при помощи
     # библиотеки json преобразуем в JSON и отдадим Алисе
@@ -52,7 +52,11 @@ def main():
     # Отправляем request.json и response в функцию handle_dialog.
     # Она сформирует оставшиеся поля JSON, которые отвечают
     # непосредственно за ведение диалога
-    handle_dialog(request.json, response)
+    if count == 0:
+        handle_dialog(request.json, response)
+        count += 1
+    elif count != 0:
+        by_rebbit(request.json, response)
 
     logging.info(f'Response:  {response!r}')
 
@@ -89,9 +93,6 @@ def handle_dialog(req, res):
     # Если он написал 'ладно', 'куплю', 'покупаю', 'хорошо',
     # то мы считаем, что пользователь согласился.
     # Подумайте, всё ли в этом фрагменте написано "красиво"?
-    if count != 0:
-        by_rebbit(req, res)
-        return
     if req['request']['original_utterance'].lower() in [
         'ладно',
         'куплю',
@@ -102,7 +103,6 @@ def handle_dialog(req, res):
     ]:
         # Пользователь согласился, прощаемся.
         res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!\nА теперь купи кролика'
-        count += 1
         # res['response']['end_session'] = True
         return
 
