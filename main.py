@@ -110,6 +110,7 @@ def handle_dialog(req, res):
     res['response']['text'] = \
         f"Все говорят '{req['request']['original_utterance']}', а ты купи слона!"
     res['response']['buttons'] = get_suggests(user_id)
+    return 0
 
 
 def by_rebbit(req, res):
