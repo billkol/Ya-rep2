@@ -54,7 +54,7 @@ def main():
     # непосредственно за ведение диалога
     by_rebbit(request.json, response)
 
-    handle_dialog(request.json, response)
+    # handle_dialog(request.json, response)
 
     logging.info(f'Response:  {response!r}')
 
