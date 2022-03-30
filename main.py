@@ -52,7 +52,7 @@ def main():
     # Отправляем request.json и response в функцию handle_dialog.
     # Она сформирует оставшиеся поля JSON, которые отвечают
     # непосредственно за ведение диалога
-    if count != 0:
+    if count == 0:
         by_rebbit(request.json, response)
     else:
         count += handle_dialog(request.json, response)
