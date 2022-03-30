@@ -37,7 +37,7 @@ sessionStorage = {}
 # который отправила нам Алиса в запросе POST
 def main():
     logging.info(f'Request: {request.json!r}')
-    count = 1
+    count = 0
     # Начинаем формировать ответ, согласно документации
     # мы собираем словарь, который потом при помощи
     # библиотеки json преобразуем в JSON и отдадим Алисе
@@ -52,9 +52,10 @@ def main():
     # Отправляем request.json и response в функцию handle_dialog.
     # Она сформирует оставшиеся поля JSON, которые отвечают
     # непосредственно за ведение диалога
-    by_rebbit(request.json, response)
-
-    # handle_dialog(request.json, response)
+    if count != 0:
+        by_rebbit(request.json, response)
+    else:
+        count += handle_dialog(request.json, response)
 
     logging.info(f'Response:  {response!r}')
 
