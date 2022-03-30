@@ -66,7 +66,7 @@ def main():
 
 def handle_dialog(req, res):
     user_id = req['session']['user_id']
-    count = 0
+    
     if req['session']['new']:
         # Это новый пользователь.
         # Инициализируем сессию и поприветствуем его.
@@ -103,8 +103,9 @@ def handle_dialog(req, res):
     ]:
         # Пользователь согласился, прощаемся.
         res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!\nА теперь купи кролика'
+        count = 1
         # res['response']['end_session'] = True
-        return
+        return count
 
     # Если нет, то убеждаем его купить слона!
     res['response']['text'] = \
